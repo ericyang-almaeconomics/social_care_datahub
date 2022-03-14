@@ -11,9 +11,13 @@ Using this web application, users can:
 
 ## Features to implement later
 - Allow users to select multiple years
+- Add more social care indicators (https://gss.civilservice.gov.uk/dashboard/tools/adult-social-care-statistics/database.html)
 - View forecasted values (using a simple AR model) for the next three years for the indicators selected as inputs
 - Integrate results into a Plotly/Dash application so users can view graphs/charts as well
 
 ## Key links
 - NHS Digital data: https://digital.nhs.uk/data-and-information/publications/statistical/adult-social-care-outcomes-framework-ascof/england-2020-21
-- ONS API: https://developer.ons.gov.uk/
+- Population: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland
+- Index of Mutiple Deprivation: https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019
+- Annual pay: https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/placeofresidencebylocalauthorityashetable8
+
