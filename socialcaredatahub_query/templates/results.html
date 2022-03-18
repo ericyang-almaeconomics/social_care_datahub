@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{%block content%}
+<table border="1">
+    <thead>
+      <tr>
+        {% if results.0.geographical_level == 'Council' %}
+            <th>Local Authority</th>
+        {% elif results.0.geographical_level == 'Region' %}
+            <th>Region</th>
+        {% else %}
+            <th>Country</th>
+        {% endif %}
+        <th>Year</th>
+        <th>Disaggregation</th>
+        <th>Measure Group Description</th>
+        <th>Measure Value</th>
+        <th>IMD - Average rank</th>
+        <th>Annual Pay Mean</th>
+        <th>Population</th>
+
+
+        
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for result in results %}
+        <tr>            
+        <td>{{result.geographical_description}}</td>
+        <td>{{result.year}}</td>
+        <td>{{result.disaggregation_level}}</td>
+        <td>{{result.measure_group_description}}</td>
+        <td>{{result.measure_value}}</td>
+        <td>{{result.imd_average_rank}}</td>
+        <td>{{result.annual_pay_mean}}</td>
+        <td>{{result.population}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p></p>
+  <form action="/download_excel/" method="POST">  
+    {% csrf_token %}
+    {% for field in form %}
+    {{field.as_hidden}}  
+    {% endfor %}
+    <input type="submit" value="Export to Excell">
+  </form>
+
+
+
+{% endblock %}
