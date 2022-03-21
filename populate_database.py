@@ -18,8 +18,8 @@ def main():
             population = final_data.loc[i,'Population']
         else:
             population = None
-        if not math.isnan(final_data.loc[i,'IMD - Average rank ']):
-            imd_average_rank = final_data.loc[i,'IMD - Average rank ']
+        if not math.isnan(final_data.loc[i,'IMD - Average rank']):
+            imd_average_rank = final_data.loc[i,'IMD - Average rank']
         else:
             imd_average_rank = None
         if not math.isnan(final_data.loc[i,'Annual Pay Mean']):
@@ -32,7 +32,7 @@ def main():
         Output.objects.get_or_create(geographical_description = final_data.loc[i,'Geographical Description'], geographical_level = final_data.loc[i,'Geographical Level'], ons_code = final_data.loc[i,'ONS Code'], \
                         measure_group_description = final_data.loc[i,'Measure Group Description'], disaggregation_level = final_data.loc[i,'Disaggregation Level'],\
                         measure_value = final_data.loc[i,'Measure Value'], imd_average_rank = imd_average_rank, annual_pay_mean = annual_pay_mean,\
-                        population = population)           
+                        population = population, year = final_data.loc[i,'Year'])           
 
 if __name__ == '__main__':
     main()
