@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Column, Field
-
+from django.urls import reverse
 
 
     
@@ -227,16 +227,16 @@ class UserInput(forms.Form):
 
 
 #I tried this in order to place Local Authority and Region in the same row but it didn't work
-'''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         self.helper = FormHelper()
+        self.helper.form_action = reverse('results')
         self.helper.layout = Layout(
             Row(
                 Column(
                     Field(
                         "local_authority",
-                        style="font-size: 14px;",
                     ),
                     css_class="form-group col-lg-6",
                 ),
@@ -252,4 +252,4 @@ class UserInput(forms.Form):
             Submit('submit','Search')
         )
 
-'''
+

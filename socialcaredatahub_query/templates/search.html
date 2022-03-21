@@ -15,9 +15,5 @@
         {% endfor %}
     </ul>
     {% endif %}
-    <form  action="/results/" method="POST">
-        {% csrf_token %}
-        {{form|crispy}}
-        <input type="submit" value="Search">
-    </form>
+    {% crispy form %}
 {% endblock %}
