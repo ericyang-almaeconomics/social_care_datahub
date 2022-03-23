@@ -83,16 +83,16 @@ def download_excel(request):
             region = [group.strip("''") for  group in form['region'].value()[0].strip('][').split(', ')]
             if region == ['']:
                     region = [] 
-
+            
             disaggregation_level = [group.strip("''") for  group in form['disaggregation'].value()[0].strip('][').split(', ')]
             if disaggregation_level == ['']:
                     disaggregation_level = []
             
             
-            measure_group_description = [group.strip("''") for  group in form['measure_group_description'].value().strip('][').split(', ')]
+            measure_group_description = form['measure_group_description'].value().strip('][')
             if measure_group_description == ['']:
                     measure_group_description = [] 
-
+            
             #check that only one of the fileds 'Local Authority', 'Region', 'England' is filled
             if (local_authority and not region and not form['england'].value()) or (not local_authority and region and not form['england'].value()) or (not local_authority and not region and form['england'].value()):
                 if local_authority:

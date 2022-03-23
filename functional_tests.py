@@ -5,7 +5,7 @@ import time
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.alert import Alert
 from urllib.request import urlopen
-
+import pandas as pd
 
 SLEEP = 2
 
@@ -65,11 +65,11 @@ class SocialCareDatahubTest(unittest.TestCase):
             select_measure_group_description.select_by_value(measure_group_description_value)
             time.sleep(SLEEP)
 
-        search = self.browser.find_element(By.ID,"submit-id-submit")
+        search = self.browser.find_element(By.XPATH,'//*[@id="submit-id-submit"]')
         search.click()
         time.sleep(SLEEP)
 
-
+    
     def test_userLogin(self):
         self.userLogin()
         if self.browser.current_url != "http://localhost:8000/search/":
@@ -168,7 +168,22 @@ class SocialCareDatahubTest(unittest.TestCase):
         if self.browser.current_url != "http://localhost:8000/search/":
             self.fail("Not expected redirect")
         time.sleep(SLEEP)
+    
 
+    def test_results(self):
+        time.sleep(SLEEP)
+        self.userLogin()       
+        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        time.sleep(SLEEP)
+
+        export_to_excel = self.browser.find_element(By.XPATH,'//*[@id="main-body-container"]/form/input[8]')
+        export_to_excel.click()
+
+        if self.browser.current_url != "http://localhost:8000/results/":
+            self.fail("Not expected redirect")
+        time.sleep(SLEEP)
+
+        
 
 if __name__ == '__main__':  
     unittest.main()
