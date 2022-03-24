@@ -1,5 +1,25 @@
 import pandas as pd
 
+MEASURE_GROUP_DESCRIPTION = {
+'Proportion of adults in contact with secondary mental health services in paid employment' : 'The proportion of adults in contact with secondary mental health services in paid employment',
+'Proportion of adults in contact with secondary mental health services who live independently, with or without support' : 'The proportion of adults in contact with secondary mental health services living independently, with or without support',
+'Proportion of adults with learning disabilities in paid employment' : 'The proportion of adults with a learning disability in paid employment',
+'Proportion of adults with learning disabilities who live in their own home or with their family' : 'The proportion of adults with a learning disability who live in their own home or with their family',
+'Proportion of carers who receive direct payments' : 'The proportion of carers who receive direct payments',
+'Proportion of carers who receive self-directed support' : 'The proportion of carers who receive self-directed support',
+'Proportion of older people 65 and over who were still at home 91 days after discharge from hospital into reablement/rehabilitation services effectiveness of the service' :'The proportion of older people (aged 65 and over) who were still at home 91 days after discharge from hospital into reablement/rehabilitation services',
+'Proportion of people using social care who receive direct payments' : 'The proportion of people who use services who receive direct payments',
+'Proportion of people who use services who say that those services have made them feel safe and secure' : 'The proportion of people who use services who say that those services have made them feel safe and secure',
+'Proportion of people who use services who feel safe' : 'The proportion of people who use services who feel safe',
+'Proportion of people using social care who receive self-directed support' : 'The proportion of people who use services who receive self-directed support',
+'Proportion of people who use services who have control over their daily life' : 'The proportion of people who use services who have control over their daily life',
+'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population' : 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population',
+'Long-term support needs of younger adults aged 18-64 met by admission to residential and nursing care homes, per 100,000 population' : 'Long-term support needs of younger adults (aged 18-64) met by admission to residential and nursing care homes, per 100,000 population',
+'Delayed transfers of care from hospital, per 100,000 population' : 'Delayed transfers of care from hospital per 100,000 population',
+'Delayed transfers of care from hospital that are attributable to adult social care, per 100,000 population' : 'Delayed transfers of care from hospital which are attributable to adult social care per 100,000 population',
+'Delayed transfers of care from hospital that are jointly attributable to NHS and adult social care, per 100,000 population' : 'Delayed transfers of care from hospital which are jointly attributable to the NHS and adult social care per 100,000 population'
+}
+
 
 def calculate_outcome_manually(local_authority):
     if local_authority['Disaggregation Level'].isin(['Total','Male','Female','18-64','65 and over']).all():
@@ -217,7 +237,9 @@ def main():
 
 
     final_data = pd.concat([final_data_2021, final_data_2020, final_data_2019, final_data_2018, final_data_2017, final_data_2016], ignore_index=True)
-    
+    final_data.replace(MEASURE_GROUP_DESCRIPTION, inplace = True)
+
+
     print(final_data.info(),'\n')
     print(final_data.head(10),'\n')
     print([(i,i) for i in final_data[final_data['Geographical Level']=='Council']['Geographical Description'].unique()],'\n')
