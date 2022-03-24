@@ -1,23 +1,22 @@
 import pandas as pd
 
-MEASURE_GROUP_DESCRIPTION = {
-'Proportion of adults in contact with secondary mental health services in paid employment' : 'The proportion of adults in contact with secondary mental health services in paid employment',
-'Proportion of adults in contact with secondary mental health services who live independently, with or without support' : 'The proportion of adults in contact with secondary mental health services living independently, with or without support',
-'Proportion of adults with learning disabilities in paid employment' : 'The proportion of adults with a learning disability in paid employment',
-'Proportion of adults with learning disabilities who live in their own home or with their family' : 'The proportion of adults with a learning disability who live in their own home or with their family',
-'Proportion of carers who receive direct payments' : 'The proportion of carers who receive direct payments',
-'Proportion of carers who receive self-directed support' : 'The proportion of carers who receive self-directed support',
-'Proportion of older people 65 and over who were still at home 91 days after discharge from hospital into reablement/rehabilitation services effectiveness of the service' :'The proportion of older people (aged 65 and over) who were still at home 91 days after discharge from hospital into reablement/rehabilitation services',
-'Proportion of people using social care who receive direct payments' : 'The proportion of people who use services who receive direct payments',
-'Proportion of people who use services who say that those services have made them feel safe and secure' : 'The proportion of people who use services who say that those services have made them feel safe and secure',
-'Proportion of people who use services who feel safe' : 'The proportion of people who use services who feel safe',
-'Proportion of people using social care who receive self-directed support' : 'The proportion of people who use services who receive self-directed support',
-'Proportion of people who use services who have control over their daily life' : 'The proportion of people who use services who have control over their daily life',
-'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population' : 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population',
-'Long-term support needs of younger adults aged 18-64 met by admission to residential and nursing care homes, per 100,000 population' : 'Long-term support needs of younger adults (aged 18-64) met by admission to residential and nursing care homes, per 100,000 population',
-'Delayed transfers of care from hospital, per 100,000 population' : 'Delayed transfers of care from hospital per 100,000 population',
-'Delayed transfers of care from hospital that are attributable to adult social care, per 100,000 population' : 'Delayed transfers of care from hospital which are attributable to adult social care per 100,000 population',
-'Delayed transfers of care from hospital that are jointly attributable to NHS and adult social care, per 100,000 population' : 'Delayed transfers of care from hospital which are jointly attributable to the NHS and adult social care per 100,000 population'
+MEASURE_GROUP = {
+    '1C1A':'1C(1A)',
+    '1C1B':'1C(1B)',
+    '1C2A':'1C(2A)',
+    '1C2B':'1C(2B)',
+    '1I(1)':'1I1',
+    '1I(2)':'1I2',
+    '2A(1)_1415':'2A(1)',
+    '2A(2)_1415':'2A(2)',
+    '2A1':'2A(1)',
+    '2A2':'2A(2)',
+    '2B1':'2B(1)',
+    '2B2':'2B(2)',
+    '2C1':'2C(1)',
+    '2C2':'2C(2)',
+    '3D1':'3D(1)', 
+    '3D2':'3D(2)'
 }
 
 
@@ -51,7 +50,7 @@ def calculate_outcome_manually(local_authority):
 def preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, year):
     print(year)
     #drop the columns we don't need
-    nhs.drop(['Geographical Code','ASCOF Measure Code','Measure Group'], axis=1, inplace=True)
+    nhs.drop(['Geographical Code','ASCOF Measure Code'], axis=1, inplace=True)
 
     #drop the rows that Geographical Level is equal to Council Type
     nhs.drop(nhs[(nhs['Geographical Level']=='Council Type') | (nhs['Geographical Level']=='Council type')].index, inplace=True)
@@ -67,9 +66,9 @@ def preprocess(nhs, population_persons, population_males, population_females, im
     nhs.drop(nhs[nhs['Measure Type'].isin(['Outcome']) & ~nhs['Disaggregation Level'].isin(['Total','Male','Female','18-64','65 and over'])].index, inplace=True)
 
     nhs['Measure Value'] = nhs['Measure Value'].astype(float)
-    nhs = nhs.groupby(['Geographical Description', 'Geographical Level','ONS Code','Measure Group Description']).apply(calculate_outcome_manually).reset_index()
+    nhs = nhs.groupby(['Geographical Description', 'Geographical Level','ONS Code','Measure Group','Measure Group Description']).apply(calculate_outcome_manually).reset_index()
     nhs.dropna(subset=['Measure Value'],inplace=True)
-    nhs.drop(['level_4'],axis=1,inplace=True)
+    nhs.drop(['level_5'],axis=1,inplace=True)
 
     #keep only the rows that Code exists in ONS Codes from NHS dataset
     population_persons.drop(population_persons[~population_persons['Code'].isin(nhs['ONS Code'])].index, inplace=True)
@@ -78,7 +77,7 @@ def preprocess(nhs, population_persons, population_males, population_females, im
 
 
     #drop the columns that count the population between 0 and 17 years old
-    if year!=2016:
+    if year>2016:
         labels = ['Name','Geography','All ages']
     else:
         labels = ['Name','All ages']
@@ -144,6 +143,8 @@ def preprocess(nhs, population_persons, population_males, population_females, im
 
 
 def main():
+
+    measure_group = {}
     #2021
     nhs = pd.read_excel(r"Data/2021/meas-from-asc-of-eng-2021-open-data-csv_v2.xlsx", na_values = ['[x]','[c]'])
     population_persons = pd.read_excel(r'Data/2021/ukpopestimatesmid2020on2021geography.xls', sheet_name = 'MYE2 - Persons', skiprows = range(7))
@@ -153,6 +154,9 @@ def main():
     imd.rename(columns = {'IMD - Average rank ':'IMD - Average rank'},inplace=True)
     annual_pay = pd.read_excel(r'Data/2021/PROV - Home Geography Table 8.7a   Annual pay - Gross 2021.xls', sheet_name = 'All', skiprows = range(4),usecols=['Code','Mean'])
     final_data_2021 = preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, 2021)
+    for group in final_data_2021['Measure Group'].unique():
+        measure_group[group]=final_data_2021[final_data_2021['Measure Group']==group].iloc[0]['Measure Group Description']    
+
 
     #2020
     nhs = pd.read_csv(r"Data/2020/meas-from-asc-of-eng-1920-open-data-csv.csv",encoding='cp1252', na_values = [':','c'])
@@ -163,6 +167,10 @@ def main():
     imd.rename(columns = {'IMD - Average rank ':'IMD - Average rank'},inplace=True)    
     annual_pay = pd.read_excel(r'Data/2020/Home Geography Table 8.7a   Annual pay - Gross 2020.xls', sheet_name = 'All', skiprows = range(4),usecols=['Code','Mean'])
     final_data_2020 = preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, 2020)
+    for group in final_data_2020['Measure Group'].unique():
+        if group not in measure_group.keys():
+            measure_group[group]=final_data_2020[final_data_2020['Measure Group']==group].iloc[0]['Measure Group Description']
+
 
     #2019
     nhs = pd.read_csv(r"Data/2019/meas-from-asc-of-eng-1819-open-data-csv-v2.csv",encoding='cp1252', na_values = ['c'])
@@ -180,10 +188,16 @@ def main():
     imd.rename(columns = {'IMD - Average rank ':'IMD - Average rank'},inplace=True)
     annual_pay = pd.read_excel(r'Data/2019/Home Geography Table 8.7a   Annual pay - Gross 2019.xls', sheet_name = 'All', skiprows = range(4),usecols=['Code','Mean'])
     final_data_2019 = preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, 2019)
-    
+    for group in final_data_2019['Measure Group'].unique():
+        if group not in measure_group.keys():
+            measure_group[group]=final_data_2019[final_data_2019['Measure Group']==group].iloc[0]['Measure Group Description']
+
+
     #2018
     nhs = pd.read_csv(r"Data/2018/meas-from-asc-of-17-18-open-data.csv",encoding='cp1252', na_values = [':','c'])
     nhs.rename(columns = {'ONS Area Code' : 'ONS Code'},inplace=True)
+    nhs.loc[nhs['Measure Group']=='2A1','Measure Group Description']= 'Long-term support needs of younger adults (aged 18-64) met by admission to residential and nursing care homes, per 100,000 population'
+    nhs.loc[nhs['Measure Group']=='2A2','Measure Group Description']= 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population'    
     population_persons = pd.read_excel(r'Data/2018/ukmidyearestimates20182019ladcodes.xls', sheet_name = 'MYE2-All', skiprows = range(4))
     population_males = pd.read_excel(r'Data/2018/ukmidyearestimates20182019ladcodes.xls', sheet_name = 'MYE2 - Males', skiprows = range(4))
     population_females = pd.read_excel(r'Data/2018/ukmidyearestimates20182019ladcodes.xls', sheet_name = 'MYE2 - Females', skiprows = range(4))
@@ -199,6 +213,10 @@ def main():
     imd = pd.read_excel(r'Data/2018/File_11_ID_2015_Upper-tier_Local_Authority_Summaries.xlsx', sheet_name = 'IMD', usecols = ['Upper Tier Local Authority District code (2013)','IMD - Average rank'])
     annual_pay = pd.read_excel(r'Data/2018/Home Geography Table 8.7a   Annual pay - Gross 2018.xls', sheet_name = 'All', skiprows = range(4),usecols=['Code','Mean'])
     final_data_2018 = preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, 2018)
+    for group in final_data_2018['Measure Group'].unique():
+        if group not in measure_group.keys():
+            measure_group[group]=final_data_2018[final_data_2018['Measure Group']==group].iloc[0]['Measure Group Description']    
+
 
     #2017
     nhs = pd.read_csv(r"Data/2017/meas-from-asc-of-1617-open-data-csv.csv",encoding='cp1252',low_memory=False)
@@ -218,6 +236,10 @@ def main():
     imd = pd.read_excel(r'Data/2017/File_11_ID_2015_Upper-tier_Local_Authority_Summaries.xlsx', sheet_name = 'IMD', usecols = ['Upper Tier Local Authority District code (2013)','IMD - Average rank'])
     annual_pay = pd.read_excel(r'Data/2017/Home Geography Table 8.7a   Annual pay - Gross 2017.xls', sheet_name = 'All', skiprows = range(4),usecols=['Code','Mean'])
     final_data_2017 = preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, 2017)
+    for group in final_data_2017['Measure Group'].unique():
+        if group not in measure_group.keys():
+            measure_group[group]=final_data_2017[final_data_2017['Measure Group']==group].iloc[0]['Measure Group Description']
+
 
     #2016
     nhs = pd.read_csv(r"Data/2016/2015-16 ASCOF open data csv file.csv",encoding='cp1252', na_values = ' ')
@@ -234,20 +256,67 @@ def main():
     imd = pd.read_excel(r'Data/2016/File_11_ID_2015_Upper-tier_Local_Authority_Summaries.xlsx', sheet_name = 'IMD', usecols = ['Upper Tier Local Authority District code (2013)','IMD - Average rank'])
     annual_pay = pd.read_excel(r'Data/2016/Home Geography Table 8.7a   Annual pay - Gross 2016.xls', sheet_name = 'All', skiprows = range(4),usecols=['Code','Mean'])
     final_data_2016 = preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, 2016)   
-
+    for group in final_data_2016['Measure Group'].unique():
+        if group not in measure_group.keys():
+            measure_group[group]=final_data_2016[final_data_2016['Measure Group']==group].iloc[0]['Measure Group Description']
 
     final_data = pd.concat([final_data_2021, final_data_2020, final_data_2019, final_data_2018, final_data_2017, final_data_2016], ignore_index=True)
-    final_data.replace(MEASURE_GROUP_DESCRIPTION, inplace = True)
+    
 
+    #2015
+    geographical_level = final_data[['ONS Code','Geographical Level']] .copy()
+    geographical_level.drop_duplicates(inplace=True)
+    
+    nhs = pd.read_csv(r"Data/2015/2014-15 ASCOF open data csv file.csv", low_memory=False, na_values = ' ')
+    nhs.rename(columns = {'GeographicalCode':'Geographical Code','GeographicalLevel':'Geographical Description','ONSAreaCode' : 'ONS Code','ASCOFMeasureCode':'ASCOF Measure Code','DisaggregationLevel':'Disaggregation Level','MeasureType':'Measure Type', 'MeasureValue':'Measure Value','MeasureGroup':'Measure Group','MeasureGroupDescription':'Measure Group Description'},inplace=True)
+    nhs['Geographical Level'] = nhs['ONS Code'].apply(lambda x:geographical_level[geographical_level['ONS Code']==x]['Geographical Level'].values[0])
+    nhs['Measure Group Description'] = nhs['Measure Group Description'].apply(lambda x:x.split(': ')[1])
+    population_persons = pd.read_excel(r'Data/2015/MYE2_population_by_sex_and_age_for_local_authorities_UK_2015.xls', sheet_name = 'Persons UK', skiprows = range(2))
+    population_males = pd.read_excel(r'Data/2015/MYE2_population_by_sex_and_age_for_local_authorities_UK_2015.xls', sheet_name = 'Males UK', skiprows = range(2))
+    population_females = pd.read_excel(r'Data/2015/MYE2_population_by_sex_and_age_for_local_authorities_UK_2015.xls', sheet_name = 'Females UK ', skiprows = range(2))
+    population_persons.rename(columns = {'CODE':'Code', 'NAME': 'Name','ALL AGES':'All ages'},inplace=True)
+    population_males.rename(columns = {'CODE':'Code', 'NAME':'Name','ALL AGES':'All ages'},inplace=True)
+    population_females.rename(columns = {'CODE':'Code', 'NAME':'Name','ALL AGES':'All ages'},inplace=True)
+    population_persons.rename(columns = {i:str(i) for i in range(90)},inplace=True)
+    population_males.rename(columns = {i:str(i) for i in range(90)},inplace=True)
+    population_females.rename(columns = {i:str(i) for i in range(90)},inplace=True)
+    population_persons.rename(columns = {90:'90+'},inplace=True)
+    population_males.rename(columns = {90:'90+'},inplace=True)
+    population_females.rename(columns = {90:'90+'},inplace=True)
+    imd = pd.read_excel(r'Data/2015/File_11_ID_2015_Upper-tier_Local_Authority_Summaries.xlsx', sheet_name = 'IMD', usecols = ['Upper Tier Local Authority District code (2013)','IMD - Average rank'])
+    annual_pay = pd.read_excel(r'Data/2015/Home Geography Table 8.7a   Annual pay - Gross 2015.xls', sheet_name = 'All', skiprows = range(4),usecols=['Code','Mean'])
+    final_data_2015 = preprocess(nhs, population_persons, population_males, population_females, imd, annual_pay, 2015)   
+    for group in final_data_2015['Measure Group'].unique():
+        if group not in measure_group.keys():
+            measure_group[group]=final_data_2015[final_data_2015['Measure Group']==group].iloc[0]['Measure Group Description']
+    
+    final_data = pd.concat([final_data,final_data_2015],ignore_index=True)
+    final_data.replace(MEASURE_GROUP,inplace=True)
+    
+    
+
+    for key in MEASURE_GROUP.keys():
+        del measure_group[key]
+
+    
+    
+    for i in range(final_data.shape[0]):
+        for key in measure_group.keys():
+            if final_data.loc[i,'Measure Group']==key:
+                final_data.loc[i,'Measure Group Description']=measure_group[key]
+
+
+
+    final_data.drop(['Measure Group'], axis=1, inplace=True)
 
     print(final_data.info(),'\n')
     print(final_data.head(10),'\n')
     print([(i,i) for i in final_data[final_data['Geographical Level']=='Council']['Geographical Description'].unique()],'\n')
     print([(i,i) for i in final_data[final_data['Geographical Level']=='Region']['Geographical Description'].unique()],'\n')
     print([(i,i) for i in final_data['Measure Group Description'].unique()],'\n')
-
+    print(final_data['Measure Group Description'].unique().shape)
     final_data.to_csv(r'Data/final_data.csv', index=False)
-   
+    
 
 
 
