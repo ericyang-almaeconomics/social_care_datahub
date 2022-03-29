@@ -4,7 +4,10 @@ from .models import Output
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import xlwt
+import plotly.express as px
+import plotly.graph_objects as go
 
+import pandas as pd
 # Create your views here.
 
 from .forms import UserInput
@@ -31,24 +34,58 @@ def results(request):
                     geographical_description = form['region'].value()
                 else:
                     geographical_description = ['England']
-                year = form['year'].value()
+                years = form['year'].value()
 
                 # check which fields have input in order to make the correct query
                 if form['disaggregation'].value() and form['measure_group_description'].value():
                     disaggregation_level =  form['disaggregation'].value()
                     measure_group_description = form['measure_group_description'].value()
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year, disaggregation_level__in = disaggregation_level, measure_group_description = measure_group_description)
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = years, disaggregation_level__in = disaggregation_level, measure_group_description = measure_group_description)
                 elif form['disaggregation'].value() and  not form['measure_group_description'].value():
                     disaggregation_level =  form['disaggregation'].value()
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year, disaggregation_level__in = disaggregation_level) 
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = years, disaggregation_level__in = disaggregation_level) 
                 elif not form['disaggregation'].value() and form['measure_group_description'].value():
                     measure_group_description = form['measure_group_description'].value()
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year, measure_group_description = measure_group_description)
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = years, measure_group_description = measure_group_description)
                 else:
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year)
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = years)
                 
                 if return_query.count()>0:
-                    return render(request, 'results.html', {'results': return_query.values(), 'form':form})
+                    return_query_df = pd.DataFrame.from_records(return_query.values())
+                    graphs = []
+
+                    #if the user chooses only one geographical area and only one year, we don't return any graphs
+                    if len(years)>1 or len(geographical_description)>1:
+                        
+                        #we create a graph for every unique combination of [Measure Group Description, Disaggregation Level]
+                        for measure_group in return_query_df['measure_group_description'].unique():
+                            for disaggregation in return_query_df[return_query_df['measure_group_description']==measure_group]['disaggregation_level'].unique():
+                                fig = go.Figure()
+                                data = return_query_df[(return_query_df['measure_group_description']==measure_group) & (return_query_df['disaggregation_level']==disaggregation)]
+                                
+                                #we create a Bar graph for every area through years
+                                for area in data['geographical_description'].unique():
+                                    fig.add_trace(
+                                        go.Bar(
+                                            name = area,
+                                            x = data[data['geographical_description']==area]['year'].astype(str),
+                                            y = data[data['geographical_description']==area]['measure_value'], 
+                                        )  
+                                    )
+                                
+
+                                #we group the Bar graphs for different areas for each combination [Measure Group Description, Disaggregation Level]
+                                fig.update_layout(title = f'{measure_group}<br>Disaggregation: {disaggregation}', title_font_size = 14, title_x=0.5, barmode = 'group', bargap=0.25,bargroupgap=0.10)
+                                fig.update_yaxes(title_text='Measure Value')
+                                fig.update_xaxes(title_text='Year')
+                                graphs.append(fig.to_html())
+                                fig.data = []
+                                fig.layout = {}
+
+
+                    return render(request, 'results.html', {'results': return_query.values(), 'form':form, 'graphs':graphs})
+
+
                 else:
                     messages.info(request, 'No results')
                     

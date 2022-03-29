@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'socialcaredatahub_query',
+    'django.contrib.humanize',
     'crispy_forms',
 ]
 

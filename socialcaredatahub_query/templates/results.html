@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {%block content%}
-<table border="1">
+{% load humanize %}
+<style>
+  table, th, td {
+    border: 1px solid;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 7px;
+  }
+  </style>
+<table border="1" id="results_table">
     <thead>
       <tr>
         {% if results.0.geographical_level == 'Council' %}
@@ -12,7 +22,7 @@
         {% endif %}
         <th>Year</th>
         <th>Disaggregation</th>
-        <th>Measure Group Description</th>
+        <th>Variable Name</th>
         <th>Measure Value</th>
         <th>IMD - Average rank</th>
         <th>Annual Pay Mean</th>
@@ -31,9 +41,9 @@
         <td>{{result.disaggregation_level}}</td>
         <td>{{result.measure_group_description}}</td>
         <td>{{result.measure_value}}</td>
-        <td>{{result.imd_average_rank}}</td>
-        <td>{{result.annual_pay_mean}}</td>
-        <td>{{result.population}}</td>
+        <td>{{result.imd_average_rank|intcomma}}</td>
+        <td>{{result.annual_pay_mean|intcomma}}</td>
+        <td>{{result.population|intcomma}}</td>
       </tr>
     {% endfor %}
     </tbody>
@@ -44,8 +54,16 @@
     {% for field in form %}
     {{field.as_hidden}}  
     {% endfor %}
-    <input type="submit" value="Export to Excell">
+    <input type="submit" id = 'export_to_excel'value="Export to Excel">
   </form>
+
+  <div>
+
+    {% for figure in graphs %}
+      {{ figure|safe }}
+    {% endfor %}
+
+  </div>
 
 
 

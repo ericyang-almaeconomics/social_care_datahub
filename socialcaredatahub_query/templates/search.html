@@ -6,6 +6,17 @@
 
 
 {%block content%}
+<style>
+    p {
+        font-size: 16px;
+        line-height: 1.4;
+        letter-spacing: 0.4px;}
+</style>
+
+    <div class="myDiv">
+        <h3>Info</h3>
+        <p>Select one or more local authorities or regions (not both) or tick the England checkbox to see the estimates for all the country. Select one or more years. Optionally, you can choose one or more disaggregation levels and one variable.</p>
+  </div>
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}

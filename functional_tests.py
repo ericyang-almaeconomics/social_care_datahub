@@ -65,8 +65,8 @@ class SocialCareDatahubTest(unittest.TestCase):
             select_measure_group_description.select_by_value(measure_group_description_value)
             time.sleep(SLEEP)
 
-        search = self.browser.find_element(By.XPATH,'//*[@id="submit-id-submit"]')
-        search.click()
+        search = self.browser.find_element(By.ID,"search_button")
+        self.browser.execute_script("arguments[0].click();", search)
         time.sleep(SLEEP)
 
     
@@ -79,7 +79,7 @@ class SocialCareDatahubTest(unittest.TestCase):
     def test_search_local_authority(self):
         time.sleep(SLEEP)
         self.userLogin()
-        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         if self.browser.current_url != "http://localhost:8000/results/":
             self.fail("Not expected")
         time.sleep(SLEEP)        
@@ -88,7 +88,7 @@ class SocialCareDatahubTest(unittest.TestCase):
     def test_search_region(self):
         time.sleep(SLEEP)
         self.userLogin()
-        self.userSearch(local_authority_values = None, region_values=['London'], england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = None, region_values=['London'], england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         if self.browser.current_url != "http://localhost:8000/results/":
             self.fail("Not expected")
         time.sleep(SLEEP)   
@@ -97,7 +97,7 @@ class SocialCareDatahubTest(unittest.TestCase):
     def test_search_england(self):
         time.sleep(SLEEP)
         self.userLogin()
-        self.userSearch(local_authority_values = None, region_values=None, england_click=True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = None, region_values=None, england_click=True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         if self.browser.current_url != "http://localhost:8000/results/":
             self.fail("Not expected")
         time.sleep(SLEEP)   
@@ -105,7 +105,7 @@ class SocialCareDatahubTest(unittest.TestCase):
     def test_search_local_authority(self):
         time.sleep(SLEEP)
         self.userLogin()
-        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         if self.browser.current_url != "http://localhost:8000/results/":
             self.fail("Not expected")
         time.sleep(SLEEP)   
@@ -115,7 +115,7 @@ class SocialCareDatahubTest(unittest.TestCase):
         self.userLogin()
 
         #choose local authority and region
-        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=['London'], england_click = False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=['London'], england_click = False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         alert = self.browser.find_element(By.XPATH, '//*[@id="main-body-container"]/ul/div')
         if alert.text != "You must fill in either only one of the fields Local Authority and Region or tick the England checkbox":
             self.fail("Not expected behaviour")
@@ -125,7 +125,7 @@ class SocialCareDatahubTest(unittest.TestCase):
         time.sleep(SLEEP)
 
         #choose  local authority and england
-        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click = True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click = True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         alert = self.browser.find_element(By.XPATH, '//*[@id="main-body-container"]/ul/div')
         if alert.text != "You must fill in either only one of the fields Local Authority and Region or tick the England checkbox":
             self.fail("Not expected behaviour")
@@ -135,7 +135,7 @@ class SocialCareDatahubTest(unittest.TestCase):
         time.sleep(SLEEP)
 
         #choose region and england        
-        self.userSearch(local_authority_values = None, region_values=['London'], england_click = True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = None, region_values=['London'], england_click = True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         alert = self.browser.find_element(By.XPATH, '//*[@id="main-body-container"]/ul/div')
         if alert.text != "You must fill in either only one of the fields Local Authority and Region or tick the England checkbox":
             self.fail("Not expected behaviour")
@@ -145,7 +145,7 @@ class SocialCareDatahubTest(unittest.TestCase):
         time.sleep(SLEEP)
 
         #choose all three fields
-        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=['London'], england_click = True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=['London'], england_click = True, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         alert = self.browser.find_element(By.XPATH, '//*[@id="main-body-container"]/ul/div')
         if alert.text != "You must fill in either only one of the fields Local Authority and Region or tick the England checkbox":
             self.fail("Not expected behaviour")
@@ -157,7 +157,7 @@ class SocialCareDatahubTest(unittest.TestCase):
     def test_search_no_results(self):
         time.sleep(SLEEP)
         self.userLogin()
-        self.userSearch(local_authority_values = ['Barking and Dagenham'], region_values=None, england_click=False, year_index=0, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[3]/label', measure_group_description_value = 'Long-term support needs of younger adults aged 18-64 met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = ['Barking and Dagenham'], region_values=None, england_click=False, year_index=0, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[3]/label', measure_group_description_value = 'Long-term support needs of younger adults (aged 18-64) met by admission to residential and nursing care homes, per 100,000 population')
 
         alert = self.browser.find_element(By.XPATH, '//*[@id="main-body-container"]/ul/div')
 
@@ -173,14 +173,21 @@ class SocialCareDatahubTest(unittest.TestCase):
     def test_results(self):
         time.sleep(SLEEP)
         self.userLogin()       
-        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults aged 65 and over met by admission to residential and nursing care homes, per 100,000 population')
+        self.userSearch(local_authority_values = ['Barnet','Bath and North East Somerset'], region_values=None, england_click=False, year_index=2, disaggregation_xpath='//*[@id="div_id_disaggregation"]/div/div[1]/label', measure_group_description_value = 'Long-term support needs of older adults (aged 65 and over) met by admission to residential and nursing care homes, per 100,000 population')
         time.sleep(SLEEP)
 
-        export_to_excel = self.browser.find_element(By.XPATH,'//*[@id="main-body-container"]/form/input[8]')
-        export_to_excel.click()
+        #check if table exists
+        try:
+            table = self.browser.find_element(By.ID, 'results_table')
+        except:
+            self.fail("No table")
 
-        if self.browser.current_url != "http://localhost:8000/results/":
-            self.fail("Not expected redirect")
+        #check if 'Export to Excel' button exists
+        try:
+            export_to_excel_button = self.browser.find_element(By.ID, 'export_to_excel')
+        except:
+            self.fail("Export to excel button not found")
+
         time.sleep(SLEEP)
 
         

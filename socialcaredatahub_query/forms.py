@@ -1,3 +1,4 @@
+from email.policy import default
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Column, Field
@@ -196,13 +197,13 @@ DISAGGREGATION_CHOICES =(
 
 
 YEAR_CHOICES = (
-    ("2021","2021"),
-    ("2020","2020"),
-    ("2019","2019"),
-    ("2018","2018"),
-    ("2017","2017"),
-    ("2016","2016"),
-    ("2015","2015")
+    ("2021",2021),
+    ("2020",2020),
+    ("2019",2019),
+    ("2018",2018),
+    ("2017",2017),
+    ("2016",2016),
+    ("2015",2015)
 )
 
 MEASURE_GROUP_SELECTION_CHOICES = (
@@ -242,9 +243,9 @@ class UserInput(forms.Form):
     local_authority = forms.CharField(label = 'Local Authority', widget = forms.SelectMultiple(choices = LOCAL_AUTHORITY_SELECTION_CHOICES), required = False)
     region = forms.CharField(label = 'Region',widget = forms.SelectMultiple(choices = REGION_SELECTION_CHOICES), required = False)
     england = forms.BooleanField(required=False)
-    year = forms.ChoiceField(label= 'Year',choices = YEAR_CHOICES)
+    year = forms.IntegerField(label= 'Year', widget = forms.SelectMultiple(choices = YEAR_CHOICES), required = True, initial = 2021)
     disaggregation = forms.ChoiceField(label = 'Disaggregation',choices=DISAGGREGATION_CHOICES, widget = forms.CheckboxSelectMultiple, required=False)
-    measure_group_description = forms.CharField(label = 'Measure Group Description', widget=forms.Select(choices=MEASURE_GROUP_SELECTION_CHOICES),required=False)
+    measure_group_description = forms.CharField(label = 'Variable Name', widget=forms.Select(choices=MEASURE_GROUP_SELECTION_CHOICES),required=False)
 
 
 #I tried this in order to place Local Authority and Region in the same row but it didn't work
@@ -270,7 +271,7 @@ class UserInput(forms.Form):
             'year',
             'disaggregation',
             'measure_group_description',
-            Submit('submit','Search')
+            Submit('submit','Search', css_id="search_button")
         )
 
 
