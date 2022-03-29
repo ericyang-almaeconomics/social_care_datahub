@@ -75,7 +75,8 @@ def results(request):
                                 
 
                                 #we group the Bar graphs for different areas for each combination [Measure Group Description, Disaggregation Level]
-                                fig.update_layout(title = f'{measure_group}<br>Disaggregation: {disaggregation}', title_font_size = 14, title_x=0.5, barmode = 'group', bargap=0.25,bargroupgap=0.10)
+                                title = f'{measure_group}<br>Disaggregation: {disaggregation}'
+                                fig.update_layout(width=1200,title = title, title_font_size = 15, title_x=0.5, barmode = 'group', bargap=0.25,bargroupgap=0.10)
                                 fig.update_yaxes(title_text='Measure Value')
                                 fig.update_xaxes(title_text='Year')
                                 graphs.append(fig.to_html())
@@ -193,5 +194,8 @@ def download_excel(request):
             
     else:
         return redirect('search')
+
+
+            
 
 
