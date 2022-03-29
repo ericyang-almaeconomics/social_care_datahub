@@ -62,7 +62,7 @@ def results(request):
                             for disaggregation in return_query_df[return_query_df['measure_group_description']==measure_group]['disaggregation_level'].unique():
                                 fig = go.Figure()
                                 data = return_query_df[(return_query_df['measure_group_description']==measure_group) & (return_query_df['disaggregation_level']==disaggregation)]
-                                
+                                data.sort_values(by=['year'],inplace=True, ignore_index=False)
                                 #we create a Bar graph for every area through years
                                 for area in data['geographical_description'].unique():
                                     fig.add_trace(
