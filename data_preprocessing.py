@@ -19,6 +19,18 @@ MEASURE_GROUP = {
     '3D2':'3D(2)'
 }
 
+GEOGRAPHICAL_DESCRIPTION = {
+    'Bristol':'Bristol, City of',
+    'Durham':'County Durham',
+    'Eastern':'East of England',
+    'ENGLAND':'England',
+    'Herefordshire':'Herefordshire, County of',
+    'Kingston upon Hull':'Kingston upon Hull, City of',
+    'Medway Towns':'Medway',
+    'Telford and the Wrekin':'Telford and Wrekin',
+    'Yorkshire and The Humber':'Yorkshire and the Humber'
+}
+
 
 def calculate_outcome_manually(local_authority):
     if local_authority['Disaggregation Level'].isin(['Total','Male','Female','18-64','65 and over']).all():
@@ -305,7 +317,8 @@ def main():
             if final_data.loc[i,'Measure Group']==key:
                 final_data.loc[i,'Measure Group Description']=measure_group[key]
 
-
+    #Make the names of the areas compatible through the years
+    final_data.replace(GEOGRAPHICAL_DESCRIPTION,inplace=True)
 
     final_data.drop(['Measure Group'], axis=1, inplace=True)
 

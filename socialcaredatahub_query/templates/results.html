@@ -9,16 +9,56 @@
   th, td {
     padding: 7px;
   }
-  </style>
-<table border="1" id="results_table">
+</style>
+
+<style>
+  #choose_output {
+    background-color: #000000;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 16px 2px;
+    cursor: pointer;
+    border-radius: 15px;
+  }
+  
+  #choose_output:hover {
+    box-shadow: 0 10px 14px 0 rgba(0,0,0,0.24),0 14px 30px 0 rgba(0,0,0,0.19);
+  }
+
+</style>
+
+
+<style>
+  #graphs {
+    display: none;
+  }  
+</style>
+<button id="choose_output" onclick="myFunction()">Show Graphs</button>
+
+<div id="results_table">
+  <form action="/download_excel/" method="POST">  
+    {% csrf_token %}
+    {% for field in form %}
+    {{field.as_hidden}}  
+    {% endfor %}
+    <input type="submit" id = 'export_to_excel'value="Export to Excel">
+  </form>    
+  <p></p>
+  <table border="1">
     <thead>
       <tr>
         {% if results.0.geographical_level == 'Council' %}
-            <th>Local Authority</th>
+          <th>Local Authority</th>
         {% elif results.0.geographical_level == 'Region' %}
-            <th>Region</th>
+          <th>Region</th>
         {% else %}
-            <th>Country</th>
+          <th>Country</th>
         {% endif %}
         <th>Year</th>
         <th>Disaggregation</th>
@@ -27,44 +67,45 @@
         <th>IMD - Average rank</th>
         <th>Annual Pay Mean</th>
         <th>Population</th>
-
-
-        
-
       </tr>
     </thead>
     <tbody>
       {% for result in results %}
         <tr>            
-        <td>{{result.geographical_description}}</td>
-        <td>{{result.year}}</td>
-        <td>{{result.disaggregation_level}}</td>
-        <td>{{result.measure_group_description}}</td>
-        <td>{{result.measure_value}}</td>
-        <td>{{result.imd_average_rank|intcomma}}</td>
-        <td>{{result.annual_pay_mean|intcomma}}</td>
-        <td>{{result.population|intcomma}}</td>
-      </tr>
-    {% endfor %}
+          <td>{{result.geographical_description}}</td>
+          <td>{{result.year}}</td>
+          <td>{{result.disaggregation_level}}</td>
+          <td>{{result.measure_group_description}}</td>
+          <td>{{result.measure_value}}%</td>
+          <td>{{result.imd_average_rank|intcomma}}</td>
+          <td>{{result.annual_pay_mean|intcomma}}</td>
+          <td>{{result.population|intcomma}}</td>
+        </tr>
+      {% endfor %}
     </tbody>
   </table>
-  <p></p>
-  <form action="/download_excel/" method="POST">  
-    {% csrf_token %}
-    {% for field in form %}
-    {{field.as_hidden}}  
-    {% endfor %}
-    <input type="submit" id = 'export_to_excel'value="Export to Excel">
-  </form>
+</div>
 
-  <div>
+<div id="graphs">
+  {% for figure in graphs %}
+    {{ figure|safe }}
+  {% endfor %}
+</div>
 
-    {% for figure in graphs %}
-      {{ figure|safe }}
-    {% endfor %}
-
-  </div>
-
-
+<script>
+  function myFunction() {
+    var x = document.getElementById("results_table");
+    var y = document.getElementById("graphs");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+      y.style.display = "none";
+      document.querySelector('#choose_output').innerHTML = 'Show Graphs';
+    } else {
+      x.style.display = "none";
+      y.style.display = "block";
+      document.querySelector('#choose_output').innerHTML = 'Show Table';
+    }
+  }
+</script>
 
 {% endblock %}

@@ -126,7 +126,8 @@ def download_excel(request):
             if disaggregation_level == ['']:
                     disaggregation_level = []
             
-            
+            year = [group.strip("''") for group in form['year'].value()[0].strip('][').split(', ')]
+
             measure_group_description = form['measure_group_description'].value().strip('][')
             if measure_group_description == ['']:
                     measure_group_description = [] 
@@ -142,17 +143,17 @@ def download_excel(request):
                 else:
                     geographical_description = ['England']
                     columns.append('Country')
-                year = form['year'].value()
+                
                 
                 
                 if disaggregation_level and measure_group_description:
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year, disaggregation_level__in = disaggregation_level, measure_group_description = measure_group_description)
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = year, disaggregation_level__in = disaggregation_level, measure_group_description = measure_group_description)
                 elif disaggregation_level and  not measure_group_description:
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year, disaggregation_level__in = disaggregation_level) 
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = year, disaggregation_level__in = disaggregation_level) 
                 elif not disaggregation_level and measure_group_description:
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year, measure_group_description = measure_group_description)
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = year, measure_group_description = measure_group_description)
                 else:
-                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year = year)
+                    return_query = Output.objects.filter(geographical_description__in = geographical_description, year__in = year)
                 
                 
                 
@@ -183,7 +184,7 @@ def download_excel(request):
                     ws.write(row_num, 1, result['year'], font_style)
                     ws.write(row_num, 2, result['disaggregation_level'], font_style)
                     ws.write(row_num, 3, result['measure_group_description'], font_style)
-                    ws.write(row_num, 4, result['measure_value'], font_style)
+                    ws.write(row_num, 4, f"{result['measure_value']}%", font_style)
                     ws.write(row_num, 5, result['imd_average_rank'], font_style)
                     ws.write(row_num, 6, result['annual_pay_mean'], font_style)
                     ws.write(row_num, 7, result['population'], font_style)
