@@ -39,6 +39,9 @@
     display: none;
   }  
 </style>
+
+
+
 <button id="choose_output" onclick="myFunction()">Show Graphs</button>
 
 <div id="results_table">
@@ -96,14 +99,20 @@
   function myFunction() {
     var x = document.getElementById("results_table");
     var y = document.getElementById("graphs");
-    if (x.style.display === "none") {
+    if ((x.style.display === "block") && (y.style.display === "block")) {
       x.style.display = "block";
       y.style.display = "none";
       document.querySelector('#choose_output').innerHTML = 'Show Graphs';
-    } else {
+    } 
+    else if((x.style.display === "none") && (y.style.display === "block")){
+      x.style.display = "block";
+      y.style.display = "block"
+      document.querySelector('#choose_output').innerHTML = 'Show Table';
+    }
+    else {
       x.style.display = "none";
       y.style.display = "block";
-      document.querySelector('#choose_output').innerHTML = 'Show Table';
+      document.querySelector('#choose_output').innerHTML = 'Show Both';
     }
   }
 </script>
